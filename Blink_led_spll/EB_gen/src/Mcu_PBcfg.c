@@ -599,17 +599,20 @@ static CONST( Mcu_SCG_RegisterConfigType, MCU_CONST) SPLL_ClockConfigPB0_0[MCU_N
 /** @violates @ref Mcu_c_REF_3 MISRA 2004 Required Rule 1.4, 31 characters limit.*/
 static CONST( Mcu_SCG_ClockConfigType, MCU_CONST) SCG_ClockConfigPB0_0 =
 {
-
-    (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
+    SCG_CLKOUTCNFG_CLKOUTSEL_SPLL_U32,
+    //SCG_CLKOUTCNFG_CLKOUTSEL_SOSC_U32,
+    //SCG_CLKOUTCNFG_CLKOUTSEL_SIRC_U32,
+    //(SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
     (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
     (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
 
 
     /* SCG ClockOut Config */
-    SCG_CLKOUTCNFG_CLKOUTSEL_SOSC_U32,
+    SCG_CLKOUTCNFG_CLKOUTSEL_SIRC_U32,
+    //SCG_CLKOUTCNFG_CLKOUTSEL_SOSC_U32,
 
     /* SOSC Config */
-   &SOSC_ClockConfigPB0_0,
+    &SOSC_ClockConfigPB0_0,
 
     /* SIRC Config */
     &SIRC_ClockConfigPB0_0,

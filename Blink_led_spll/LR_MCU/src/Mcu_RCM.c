@@ -441,8 +441,6 @@ FUNC(uint32, MCU_CODE) Mcu_RCM_GetCurrentSystemResetIsrSettings(VAR(void, AUTOMA
 {
     VAR( uint32, AUTOMATIC) u32SystemResetIsrStatus;
     /* get RCM_SRIE and mask agains what i need */
-    /** @violates @ref Mcu_RCM_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_RCM_c_REF_5 The cast is used to access memory mapped registers.*/
     u32SystemResetIsrStatus = REG_READ32(RCM_SRIE_ADDR32);
     u32SystemResetIsrStatus &= RCM_SRIE_RWBITS_MASK32;
 
@@ -457,8 +455,7 @@ FUNC(uint32, MCU_CODE) Mcu_RCM_GetCurrentSystemResetIsrSettings(VAR(void, AUTOMA
 */
 FUNC(void, MCU_CODE) Mcu_RCM_SystemResetIsrConfig(VAR(void, AUTOMATIC))
 {
-    /** @violates @ref Mcu_RCM_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_RCM_c_REF_5 The cast is used to access memory mapped registers.*/
+
     REG_WRITE32(RCM_SRIE_ADDR32, (uint32)RCM_SRIE_RESET_MASK32);
 }
 
@@ -470,8 +467,6 @@ FUNC(void, MCU_CODE) Mcu_RCM_SystemResetIsrConfig(VAR(void, AUTOMATIC))
 */
 FUNC(void, MCU_CODE) Mcu_RCM_RestoreSystemResetIsrConfig(VAR(uint32, AUTOMATIC) u32SystemResetIsrConfig)
 {
-    /** @violates @ref Mcu_RCM_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_RCM_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_WRITE32(RCM_SRIE_ADDR32, (uint32)(u32SystemResetIsrConfig & RCM_SRIE_RWBITS_MASK32));
 }
 

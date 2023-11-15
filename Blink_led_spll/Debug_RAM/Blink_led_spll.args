@@ -1,5 +1,5 @@
 -T
-"D:/S32_wp/Blink_led_spll/Project_Settings/Linker_Files/S32K144_64_ram.ld"
+"C:/Users/PC/Desktop/Assigment2/AUTOSAR_FA_ASS_2/Blink_led_spll/Project_Settings/Linker_Files/S32K144_64_ram.ld"
 -Wl,-Map,"Blink_led_spll.map"
 -Xlinker
 --gc-sections

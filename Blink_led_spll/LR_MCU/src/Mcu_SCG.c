@@ -240,102 +240,76 @@ FUNC( void, MCU_CODE) Mcu_SCG_SystemClockInit(P2CONST(Mcu_SCG_ClockConfigType, A
 {
     VAR(uint32, AUTOMATIC) u32TimeOut = 0U;
     VAR(uint32, AUTOMATIC) u32RegValue = 0U;
-    
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
     REG_WRITE32(SCG_RCCR_ADDR32, pConfigPtr->u32RunClockControlConfiguration);
+
     /* Wait for switching system clock source done. */
-#ifdef MCU_E10777_IPV_SCG_0001
-#if (MCU_E10777_IPV_SCG_0001 == STD_ON)
     /* Support for e10777 errata: SCG_RCCR[SCS] and SCG_HCCR[SCS] should be read twice by software to get correctly value */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     u32RegValue = REG_READ32(SCG_RCCR_ADDR32) & SCG_RCCR_SCS_MASK32; 
-#endif  /* MCU_E10777_IPV_SCG_0001 */
-#endif  /* (MCU_E10777_IPV_SCG_0001 == STD_ON) */
+
     u32TimeOut = MCU_TIMEOUT_LOOPS;    
     do
     {
         u32TimeOut--;
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
         u32RegValue = REG_READ32(SCG_RCCR_ADDR32) & SCG_RCCR_SCS_MASK32; 
     }
     while (((pConfigPtr->u32RunClockControlConfiguration & SCG_RCCR_SCS_MASK32) != u32RegValue) && ((uint32)0x00U < u32TimeOut));
     /* Raise a error report if the timeout is expired */
     if ((uint32)0x0U == u32TimeOut)
     {
-#if (MCU_DISABLE_DEM_REPORT_ERROR_STATUS == STD_OFF)
-        if ((uint32)STD_ON == Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.state)
-        {
-            (void)Dem_SetEventStatus((Dem_EventIdType)Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.id, DEM_EVENT_STATUS_FAILED);
-        }
-#endif
+        /*  Init error    */
     }
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
-    REG_WRITE32(SCG_VCCR_ADDR32, pConfigPtr->u32VLPRClockControlConfiguration);
+
+
+#ifdef MCU_HSRUN_VLPR_MODE_NOT_SUPPORT
+    /* do nothing */
+#else
+    /*  Conffig para of mode VLPR   */
+   REG_WRITE32(SCG_VCCR_ADDR32, pConfigPtr->u32VLPRClockControlConfiguration);
     /* Wait for switching system clock source done. */
     u32TimeOut = MCU_TIMEOUT_LOOPS;    
     do
     {
         u32TimeOut--;
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
         u32RegValue = REG_READ32(SCG_VCCR_ADDR32) & SCG_VCCR_SCS_MASK32; 
     }
     while (((pConfigPtr->u32VLPRClockControlConfiguration & SCG_VCCR_SCS_MASK32) != u32RegValue) && ((uint32)0x00U < u32TimeOut));
     /* Raise a error report if the timeout is expired */
     if ((uint32)0x0U == u32TimeOut)
     {
-#if (MCU_DISABLE_DEM_REPORT_ERROR_STATUS == STD_OFF)
-        if ((uint32)STD_ON == Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.state)
-        {
-            (void)Dem_SetEventStatus((Dem_EventIdType)Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.id, DEM_EVENT_STATUS_FAILED);
-        }
-#endif
+        /*  Init error  */
     }
-#ifdef MCU_HSRUN_MODE_NOT_SUPPORT
-#if (MCU_HSRUN_MODE_NOT_SUPPORT == STD_ON)
-    /* do nothing */
-#else
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
+
+    /*  Conffig para of mode HCCR   */
     REG_WRITE32(SCG_HCCR_ADDR32, pConfigPtr->u32HSRUNClockControlConfiguration);
     /* Wait for switching system clock source done. */
-#ifdef MCU_E10777_IPV_SCG_0001
-#if (MCU_E10777_IPV_SCG_0001 == STD_ON)
     /* Support for e10777 errata: SCG_RCCR[SCS] and SCG_HCCR[SCS] should be read twice by software to get correctly value */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
     u32RegValue = REG_READ32(SCG_HCCR_ADDR32) & SCG_HCCR_SCS_MASK32;
-#endif  /* MCU_E10777_IPV_SCG_0001 */
-#endif  /* (MCU_E10777_IPV_SCG_0001 == STD_ON) */
+
     u32TimeOut = MCU_TIMEOUT_LOOPS;    
     do
     {
         u32TimeOut--;
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
         u32RegValue = REG_READ32(SCG_HCCR_ADDR32) & SCG_HCCR_SCS_MASK32; 
     }
     while (((pConfigPtr->u32HSRUNClockControlConfiguration & SCG_HCCR_SCS_MASK32) != u32RegValue) && ((uint32)0x00U < u32TimeOut));
     /* Raise a error report if the timeout is expired */
     if ((uint32)0x0U == u32TimeOut)
     {
-#if (MCU_DISABLE_DEM_REPORT_ERROR_STATUS == STD_OFF)
-        if ((uint32)STD_ON == Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.state)
-        {
-            (void)Dem_SetEventStatus((Dem_EventIdType)Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.id, DEM_EVENT_STATUS_FAILED);
-        }
-#endif
+        /*  Init error  */
     }
+
 #endif
-#endif
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
+    /*  Config ClockOut*/
     REG_WRITE32(SCG_CLKOUTCNFG_ADDR32, pConfigPtr->u32ClockOutConfiguration);
 }
+
+
 /**
 * @brief            This function will select SIRC as system clock
 */
@@ -510,26 +484,19 @@ FUNC( void, MCU_CODE) Mcu_SCG_SoscInit(P2CONST(Mcu_SCG_ClockConfigType, AUTOMATI
     VAR(uint32, AUTOMATIC) u32RegValue = 0U;
     
     /* Read value of SCG_SOSCCSR register and clear SOSCCMRE and SOSCCM field bit */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     u32RegValue = REG_READ32(SCG_SOSCCSR_ADDR32) & ~(SCG_SOSCCSR_SOSCCMRE_MASK32 | SCG_SOSCCSR_SOSCCM_MASK32);
     
     /* Disable System OSC Clock Monitor Reset and System OSC Clock Monitor so the SOSC can be disabled. */
     /* Clear System OSC Clock Error bit. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_RMW32(SCG_SOSCCSR_ADDR32, SCG_SOSCCSR_SOSCCMRE_MASK32 | SCG_SOSCCSR_SOSCCM_MASK32 | SCG_SOSCCSR_SOSCERR_MASK32, u32RegValue);
     
     /* Disable SOSC so the rest of the register can be configured. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_BIT_CLEAR32(SCG_SOSCCSR_ADDR32, SCG_SOSCCSR_SOSCEN_MASK32);
 
     /* The last register configured is SOSCCSR so the SOSC will be enabled or disabled, depending on the user configuration. */
     for ( u32Counter = (uint32)0x00U; u32Counter < MCU_NUMBER_OF_SOSC_REGISTERS_U32; u32Counter++)
     {
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+
         REG_WRITE32((*pConfigPtr->apSoscClockConfig)[u32Counter].u32RegisterAddr, (*pConfigPtr->apSoscClockConfig)[u32Counter].u32RegisterData);
     }
     
@@ -537,27 +504,18 @@ FUNC( void, MCU_CODE) Mcu_SCG_SoscInit(P2CONST(Mcu_SCG_ClockConfigType, AUTOMATI
     u32TimeOut = MCU_TIMEOUT_LOOPS;
     
     /* Check whether the mode SOSC is enable or not. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     if ((REG_READ32(SCG_SOSCCSR_ADDR32) & SCG_SOSCCSR_SOSCEN_MASK32) == SCG_SOSCCSR_SOSCEN_MASK32)
     {
         do
         {
             u32TimeOut--;
-            /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-            /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
             u32RegValue = REG_READ32(SCG_SOSCCSR_ADDR32) & SCG_SOSCCSR_SOSCVLD_MASK32;
         }
         while ((SCG_SOSCCSR_SOSCVLD_MASK32 != u32RegValue) && ((uint32)0x00U < u32TimeOut));
     
         if ( (uint32)0x0U == u32TimeOut)
         {
-#if (MCU_DISABLE_DEM_REPORT_ERROR_STATUS == STD_OFF)
-            if ((uint32)STD_ON == Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.state)
-            {
-                (void)Dem_SetEventStatus((Dem_EventIdType)Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.id, DEM_EVENT_STATUS_FAILED);
-            }
-#endif
+            /*  Init error*/
         }
     }
 }
@@ -575,42 +533,30 @@ FUNC( void, MCU_CODE) Mcu_SCG_SircInit(P2CONST(Mcu_SCG_ClockConfigType, AUTOMATI
     VAR(uint32, AUTOMATIC) u32RegValue = 0U;
     
     /* Disable SIRC so the rest of the register can be configured. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_BIT_CLEAR32(SCG_SIRCCSR_ADDR32, SCG_SIRCCSR_SIRCEN_MASK32);
 
     /* The last register configured is SIRCCSR so the SIRC will be enabled or disabled, depending on the user configuration. */
     for ( u32Counter = (uint32)0x00U; u32Counter < MCU_NUMBER_OF_SIRC_REGISTERS_U32; u32Counter++)
     {
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+        /* Write 3 Register : Reg_CSR, Reg_DIV, Reg_CFG */
         REG_WRITE32((*pConfigPtr->apSircClockConfig)[u32Counter].u32RegisterAddr, (*pConfigPtr->apSircClockConfig)[u32Counter].u32RegisterData);
     }
     /*Wait for Valid bit done */
     u32TimeOut = MCU_TIMEOUT_LOOPS;
     
     /* Check whether the mode SIRC is enable or not. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     if ((REG_READ32(SCG_SIRCCSR_ADDR32) & SCG_SIRCCSR_SIRCEN_MASK32) == SCG_SIRCCSR_SIRCEN_MASK32)
     {
         do
         {
             u32TimeOut--;
-            /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-            /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
             u32RegValue = REG_READ32(SCG_SIRCCSR_ADDR32) & SCG_SIRCCSR_SIRCVLD_MASK32;
         }
         while ((SCG_SIRCCSR_SIRCVLD_MASK32 != u32RegValue) && ((uint32)0x00U < u32TimeOut));
     
         if ( (uint32)0x0U == u32TimeOut)
         {
-#if (MCU_DISABLE_DEM_REPORT_ERROR_STATUS == STD_OFF)
-            if ((uint32)STD_ON == Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.state)
-            {
-                (void)Dem_SetEventStatus((Dem_EventIdType)Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.id, DEM_EVENT_STATUS_FAILED);
-            }
-#endif
+            /*  Init error */
         }
     }
 }
@@ -628,29 +574,22 @@ FUNC( void, MCU_CODE) Mcu_SCG_FircInit(P2CONST(Mcu_SCG_ClockConfigType, AUTOMATI
     VAR(uint32, AUTOMATIC) u32RegValue = 0U;
     
     /* Disable FIRC so the rest of the register can be configured. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_BIT_CLEAR32(SCG_FIRCCSR_ADDR32, SCG_FIRCCSR_FIRCEN_MASK32);
 
     /* The last register configured is FIRCCSR so the FIRC will be enabled or disabled, depending on the user configuration. */
     for ( u32Counter = (uint32)0x00U; u32Counter < MCU_NUMBER_OF_FIRC_REGISTERS_U32; u32Counter++)
     {
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+        /* Write 3 Register : Reg_CSR, Reg_DIV, Reg_CFG */
         REG_WRITE32((*pConfigPtr->apFircClockConfig)[u32Counter].u32RegisterAddr, (*pConfigPtr->apFircClockConfig)[u32Counter].u32RegisterData);
     }
     
     /* Check whether the mode FIRC is enable or not. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     if ((REG_READ32(SCG_FIRCCSR_ADDR32) & SCG_FIRCCSR_FIRCEN_MASK32) == SCG_FIRCCSR_FIRCEN_MASK32)
     {
         /* wait for valid bit done. */
         do
         {
             u32TimeOut--;
-            /** @violates @ref Mcu_SCG_c_REF_4 Conversion from int to pointer */
-            /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
             u32RegValue = REG_READ32(SCG_FIRCCSR_ADDR32) & SCG_FIRCCSR_FIRCVLD_MASK32; 
         }
         while ((SCG_FIRCCSR_FIRCVLD_MASK32 != u32RegValue) && ((uint32)0x00U < u32TimeOut));
@@ -658,12 +597,7 @@ FUNC( void, MCU_CODE) Mcu_SCG_FircInit(P2CONST(Mcu_SCG_ClockConfigType, AUTOMATI
     
     if ( (uint32)0x0U == u32TimeOut)
     {
-#if (MCU_DISABLE_DEM_REPORT_ERROR_STATUS == STD_OFF)
-        if ((uint32)STD_ON == Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.state)
-        {
-            (void)Dem_SetEventStatus((Dem_EventIdType)Mcu_pDemCfgPtr->Mcu_E_TimeoutFailureCfg.id, DEM_EVENT_STATUS_FAILED);
-        }
-#endif
+      /* Init error */
     }
 }
 
@@ -680,26 +614,18 @@ FUNC( void, MCU_CODE) Mcu_SCG_SpllInit(P2CONST(Mcu_SCG_ClockConfigType, AUTOMATI
     VAR(uint32, AUTOMATIC) u32RegValue = 0U;
     
     /* Read value of SCG_SPLLCSR register and clear SPLLCMRE and SPLLCM field bits */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     u32RegValue = REG_READ32(SCG_SPLLCSR_ADDR32) & ~(SCG_SPLLCSR_SPLLCMRE_MASK32 | SCG_SPLLCSR_SPLLCM_MASK32);
     
     /* Disable System PLL Clock Monitor Reset Enable and System PLL Clock Monitor so the SPLL can be disabled. */
     /* Clear System PLL Clock Error bit. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_RMW32(SCG_SPLLCSR_ADDR32, SCG_SPLLCSR_SPLLCMRE_MASK32 | SCG_SPLLCSR_SPLLCM_MASK32 | SCG_SPLLCSR_SPLLERR_MASK32, u32RegValue);
     
     /* Disable SPLL so the rest of the register can be configured. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_BIT_CLEAR32(SCG_SPLLCSR_ADDR32, SCG_SPLLCSR_SPLLEN_MASK32);
 
     /* The last register configured is SCG_SPLLCSR so the SPLL will be enabled or disabled, depending on the user configuration. */
     for ( u32Counter = (uint32)0x00U; u32Counter < MCU_NUMBER_OF_SPLL_REGISTERS_U32; u32Counter++)
     {
-        /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-        /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
         REG_WRITE32((*pConfigPtr->apSpllClockConfig)[u32Counter].u32RegisterAddr, (*pConfigPtr->apSpllClockConfig)[u32Counter].u32RegisterData);
     }
 }
@@ -723,14 +649,10 @@ FUNC( void, MCU_CODE) Mcu_SCG_PrepareSpllBeforeSoscInit(VAR( void, AUTOMATIC))
     VAR(uint32, AUTOMATIC) u32RegValue = 0U;
     
     /* Read value of SCG_SPLLCSR register and clear SPLLCMRE and SPLLCM field bits */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     u32RegValue = REG_READ32(SCG_SPLLCSR_ADDR32) & ~(SCG_SPLLCSR_SPLLCMRE_MASK32 | SCG_SPLLCSR_SPLLCM_MASK32);
     
     /* Disable System PLL Clock Monitor Reset Enable and System PLL Clock Monitor so the SPLL can be disabled. */
     /* Clear System PLL Clock Error bit. */
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_RMW32(SCG_SPLLCSR_ADDR32, SCG_SPLLCSR_SPLLCMRE_MASK32 | SCG_SPLLCSR_SPLLCM_MASK32 | SCG_SPLLCSR_SPLLERR_MASK32, u32RegValue);
 }
 
@@ -831,8 +753,7 @@ FUNC( void, MCU_CODE) Mcu_SCG_DisableClockMonitors(VAR( void, AUTOMATIC))
 */
 FUNC( void, MCU_CODE) Mcu_SCG_DisableSpllClock(VAR( void, AUTOMATIC))
 {
-    /** @violates @ref Mcu_SCG_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SCG_c_REF_5 The cast is used to access memory mapped registers.*/
+    /* Disable SPLL */
     REG_RMW32(SCG_SPLLCSR_ADDR32,SCG_SPLLCSR_SPLLEN_MASK32,SCG_SPLLCSR_SPLL_DISABLE_U32);    
 }
 #endif  /* MCU_NO_PLL */

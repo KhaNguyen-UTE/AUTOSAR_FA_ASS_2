@@ -271,26 +271,18 @@ FUNC(void, MCU_CODE) Mcu_SIM_Init(P2CONST(Mcu_SIM_ConfigType, AUTOMATIC, MCU_APP
 FUNC( void, MCU_CODE) Mcu_SIM_ClockConfig(P2CONST(Mcu_SIM_ClockConfigType, AUTOMATIC, MCU_APPL_CONST) pClockConfigPtr)
 {
     /* Configure PLATGC register */
-    /** @violates @ref Mcu_SIM_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SIM_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_WRITE32(SIM_PLATCGC_ADDR32, ((uint32)pClockConfigPtr->u32ClockGatingConfiguration & SIM_PLATGC_RWBITS_MASK32));
     
     /* CLKOUTEN should be first cleared before write to SIM_CHIPCTL */
-    /** @violates @ref Mcu_SIM_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SIM_c_REF_5 The cast is used to access memory mapped registers.*/
-    REG_RMW32(SIM_CHIPCTL_ADDR32, SIM_CHIPCTL_CLKOUTEN_MASK32, SIM_CHIPCTL_CLKOUT_DISABLE_U32);    
+    REG_RMW32(SIM_CHIPCTL_ADDR32, SIM_CHIPCTL_CLKOUTEN_MASK32, SIM_CHIPCTL_CLKOUT_DISABLE_U32);  
+
     /* Configure SIM_CHIPCTL clock settings (TRACECLK_SEL, CLKOUTEN, CLKOUTDIV, CLKOUT_SEL) */
-    /** @violates @ref Mcu_SIM_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SIM_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_RMW32(SIM_CHIPCTL_ADDR32, SIM_CHIPCTL_CLOCK_MASK32, ((uint32)pClockConfigPtr->u32ChipControlClockConfiguration & (~SIM_CHIPCTL_CLKOUTEN_MASK32)));
+
     /* Enable Clockout */
-    /** @violates @ref Mcu_SIM_c_REF_4 Conversion from pointer to integer */
-    /** @violates @ref Mcu_SIM_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_RMW32(SIM_CHIPCTL_ADDR32, SIM_CHIPCTL_CLKOUTEN_MASK32, ((uint32)pClockConfigPtr->u32ChipControlClockConfiguration & SIM_CHIPCTL_CLKOUTEN_MASK32));
     
     /* Configure Trace Clock settings */
-    /** @violates @ref Mcu_SIM_c_REF_4 Conversion from int to pointer */
-    /** @violates @ref Mcu_SIM_c_REF_5 The cast is used to access memory mapped registers.*/
     REG_WRITE32(SIM_CLKDIV4_ADDR32, ((uint32)pClockConfigPtr->u32TraceClockConfiguration & SIM_CLKDIV4_RWBITS_MASK32));
 }
 #endif
