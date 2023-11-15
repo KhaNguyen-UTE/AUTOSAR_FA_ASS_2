@@ -226,8 +226,6 @@ FUNC( void, MCU_CODE) Mcu_PCC_PeripheralConfig(P2CONST(Mcu_PCC_ConfigType, AUTOM
         
     for ( u32Counter = (uint32)0x00U; u32Counter < (uint32)(pConfigPtr->u32NumberOfPccRegisters); u32Counter++)
     {
-        /** @violates @ref Mcu_PCC_c_REF_4 Conversion from pointer to integer */
-        /** @violates @ref Mcu_PCC_c_REF_5 The cast is used to access memory mapped registers.*/
         u8PeripheralIsPresent = REG_READ32((*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterAddr) & PCC_PR_MASK32;
         
         if (PCC_PERIPHERAL_IS_PRESENT_U32 == u8PeripheralIsPresent)
@@ -235,19 +233,14 @@ FUNC( void, MCU_CODE) Mcu_PCC_PeripheralConfig(P2CONST(Mcu_PCC_ConfigType, AUTOM
             if(PCC_PCS_UNAVAILABLE_U32 != ((*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterData & PCC_PCS_UNAVAILABLE_U32))
             {
                 /* Disable Peripheral clock first */
-                /** @violates @ref Mcu_PCC_c_REF_4 Conversion from pointer to integer */
-                /** @violates @ref Mcu_PCC_c_REF_5 The cast is used to access memory mapped registers.*/
                 REG_BIT_CLEAR32((*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterAddr,PCC_CGC_MASK32);
+                
                 /* Configure all parameters */
-                /** @violates @ref Mcu_PCC_c_REF_4 Conversion from pointer to integer */
-                /** @violates @ref Mcu_PCC_c_REF_5 The cast is used to access memory mapped registers.*/
                 REG_WRITE32((*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterAddr, (*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterData);
                 
             }
             else
             {
-                /** @violates @ref Mcu_PCC_c_REF_4 Conversion from pointer to integer */
-                /** @violates @ref Mcu_PCC_c_REF_5 The cast is used to access memory mapped registers.*/
                 REG_WRITE32((*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterAddr, (*pConfigPtr->apPeripheralConfig)[u32Counter].u32RegisterData);
             }
         }

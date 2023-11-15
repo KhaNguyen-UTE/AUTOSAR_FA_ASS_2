@@ -236,6 +236,7 @@ extern "C"{
 #define SCG_CLKOUTCNFG_CLKOUTSEL_MASK32                  ((uint32)0x0F000000U)
 
 #define SCG_CLKOUTCNFG_CLKOUTSEL_SCG_SLOW_CLK_U32        ((uint32)0x00000000U)
+//kienset
 #define SCG_CLKOUTCNFG_CLKOUTSEL_SOSC_U32                ((uint32)0x01000000U)
 #define SCG_CLKOUTCNFG_CLKOUTSEL_SIRC_U32                ((uint32)0x02000000U)
 #define SCG_CLKOUTCNFG_CLKOUTSEL_FIRC_U32                ((uint32)0x03000000U)

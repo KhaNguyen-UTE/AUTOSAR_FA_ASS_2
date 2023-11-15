@@ -658,178 +658,54 @@ FUNC(void, MCU_CODE) Mcu_Ipw_Init(P2CONST( Mcu_HwIPsConfigType, AUTOMATIC, MCU_A
 */
 FUNC( void, MCU_CODE) Mcu_Ipw_InitClock(P2CONST( Mcu_ClockConfigType, AUTOMATIC, MCU_APPL_CONST) Mcu_pClockConfigPtr)
 {
+    /*  save value RCM_SRIE */
     VAR(uint32, AUTOMATIC) u32SystemResetIsrConfig = 0UL;
-#if (MCU_NO_PLL == STD_OFF)
+
+    /*  save value */
     VAR(uint32, AUTOMATIC) u32PLLClockMonitorConfig = 0UL;
-#endif
 
     /* Save configs to global variable for other usage */
     Mcu_pClockConfig = Mcu_pClockConfigPtr;
 
-#if (IPV_CMU == IPV_CMU_00_00_00_01)
-#ifdef MCU_ENABLE_CMU_PERIPHERAL
-#if (MCU_ENABLE_CMU_PERIPHERAL == STD_ON)
-    /* Disable CMU0. */
-    if (Mcu_PCC_GetStatus(PCC_CMU0_ADDR32) & PCC_CMU0_RWBITS_MASK32)
-    {
-        Mcu_CMU_Disable_CMU(CMU0_CHANNEL);
-    }
-    
-    /* Disable CMU1. */
-    if (Mcu_PCC_GetStatus(PCC_CMU1_ADDR32) & PCC_CMU1_RWBITS_MASK32)
-    {
-        Mcu_CMU_Disable_CMU(CMU1_CHANNEL);
-    }
-#endif
-#endif
-#endif
+/* Init SIM */
+    Mcu_SIM_ClockConfig(Mcu_pClockConfig->SIM_pClockConfig);
 
-    /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-    /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-    /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-    Call_Mcu_SIM_ClockConfig(Mcu_pClockConfig->SIM_pClockConfig);
-
-    /* Configure SIRC and then select it as system clock by default. This is needed to apply new configuration for Pll
-       in case of the Pll selected as system clock previously. This is possible only when sys clock is under Mcu control.
-    */
-    if (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL != Mcu_pClockConfigPtr->SCG_pClockConfig->u32RunClockControlConfiguration)
-    {
-        /* get the current System Reset Interrupt Enable settings */
-        u32SystemResetIsrConfig = Mcu_RCM_GetCurrentSystemResetIsrSettings();
-
-        /* Configure all reset sources to be 'Reset' */
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        Call_Mcu_RCM_SystemResetIsrConfig();
-
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_8 MISRA 2004 Rule 8.1, Functions shall have prototype */
-        Call_Mcu_SCG_DropSystemClockToTrustedClock();
-
-        /* Restore System Reset Interrupt Config */
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_8 MISRA 2004 Rule 8.1, Functions shall have prototype */
-        Call_Mcu_RCM_RestoreSystemResetIsrConfig(u32SystemResetIsrConfig);
-    }
-    
-    /*After that, configure all parameters here */
-    /* Configure FIRC */
-    if (MCU_IPW_SIRC_UNDER_MCU_CONTROL == (Mcu_pClockConfig->u8ClockSourcesControl & MCU_IPW_SIRC_UNDER_MCU_CONTROL))
-    {
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-        Call_Mcu_SCG_SircInit(Mcu_pClockConfig->SCG_pClockConfig);
-    }
-
-#if (MCU_NO_PLL == STD_OFF)
-    /* Prepare SPLL before initialize SOSC  */
-    if (MCU_IPW_SPLL_UNDER_MCU_CONTROL == (Mcu_pClockConfig->u8ClockSourcesControl & MCU_IPW_SPLL_UNDER_MCU_CONTROL))
-    {
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_8 MISRA 2004 Rule 8.1, Functions shall have prototype */
-        Call_Mcu_SCG_PrepareSpllBeforeSoscInit();
-        /* Disable SPLL Clock before initialize SOSC */
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /**  @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        Call_Mcu_SCG_DisableSpllClock();
-    }
-    else
-    {
-        /* get the current PLL clock monitor config */
-        u32PLLClockMonitorConfig = Mcu_SCG_GetCurrentPLLClockMonitorConfig();
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_8 MISRA 2004 Rule 8.1, Functions shall have prototype */
-        Call_Mcu_SCG_PrepareSpllBeforeSoscInit();
-    }
-#endif  /* MCU_NO_PLL */
-
-    /* Re-Configure FIRC by user configuration */
-    if (MCU_IPW_FIRC_UNDER_MCU_CONTROL == (Mcu_pClockConfig->u8ClockSourcesControl & MCU_IPW_FIRC_UNDER_MCU_CONTROL))
-    {
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-        Call_Mcu_SCG_FircInit(Mcu_pClockConfig->SCG_pClockConfig);
-    }
-
+/* Init SIRC */
+    Mcu_SCG_SircInit(Mcu_pClockConfig->SCG_pClockConfig);
+/* Init SOSC */
+    /* get the current PLL clock monitor config */
+    u32PLLClockMonitorConfig = Mcu_SCG_GetCurrentPLLClockMonitorConfig();
+    /* Prepare SPLL before initialize SOSC - reset 3 bit 16,17,26 of Register CSR */
+    Mcu_SCG_PrepareSpllBeforeSoscInit();
+    /* Disable SPLL Clock before initialize SOSC */
+    Mcu_SCG_DisableSpllClock();
     /* Configure SOSC */
-    if (MCU_IPW_SOSC_UNDER_MCU_CONTROL == (Mcu_pClockConfig->u8ClockSourcesControl & MCU_IPW_SOSC_UNDER_MCU_CONTROL))
-    {
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-        Call_Mcu_SCG_SoscInit(Mcu_pClockConfig->SCG_pClockConfig);
-    }
-
-#if (MCU_NO_PLL == STD_OFF)
+    Mcu_SCG_SoscInit(Mcu_pClockConfig->SCG_pClockConfig);
+    /* Restore PLL clock monitor config */
+    Mcu_SCG_RestorePLLClockMonitorConfig(u32PLLClockMonitorConfig);
+/* Init FIRC */     
+    /* Re-Configure FIRC by user configuration */
+    Mcu_SCG_FircInit(Mcu_pClockConfig->SCG_pClockConfig);
+/* Init SPLL */ 
     /* Configure SPLL */
-    if (MCU_IPW_SPLL_UNDER_MCU_CONTROL == (Mcu_pClockConfig->u8ClockSourcesControl & MCU_IPW_SPLL_UNDER_MCU_CONTROL))
-    {
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-        Call_Mcu_SCG_SpllInit(Mcu_pClockConfig->SCG_pClockConfig);
-    }
-    else
-    {
-        /* Restore PLL clock monitor config */
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_8 MISRA 2004 Rule 8.1, Functions shall have prototype */
-        Call_Mcu_SCG_RestorePLLClockMonitorConfig(u32PLLClockMonitorConfig);
-    }
-#endif  /* MCU_NO_PLL */
-    
-    /* Configure System Clock */
-    if (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL != Mcu_pClockConfigPtr->SCG_pClockConfig->u32RunClockControlConfiguration)
-    {
-        /* get the current System Reset Interrupt Enable settings */
-        u32SystemResetIsrConfig = Mcu_RCM_GetCurrentSystemResetIsrSettings();
+    Mcu_SCG_SpllInit(Mcu_pClockConfig->SCG_pClockConfig);
 
-        /* Configure all reset sources to be 'Reset' */
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        Call_Mcu_RCM_SystemResetIsrConfig();
 
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-        Call_Mcu_SCG_SystemClockInit(Mcu_pClockConfigPtr->SCG_pClockConfig);
+/**** Configure System Clock *****/
+    /* get the value current System Reset Interrupt Enable settings */
+    u32SystemResetIsrConfig = Mcu_RCM_GetCurrentSystemResetIsrSettings();
 
-        /* Restore System Reset Interrupt Config */
-        /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-        /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-        /** @violates @ref Mcu_IPW_c_REF_8 MISRA 2004 Rule 8.1, Functions shall have prototype */
-        Call_Mcu_RCM_RestoreSystemResetIsrConfig(u32SystemResetIsrConfig);
-    }
-    
+    /* Configure all reset sources to be 'Reset' */
+    Mcu_RCM_SystemResetIsrConfig();
+
+    /* Config system source clock   */
+    Mcu_SCG_SystemClockInit(Mcu_pClockConfig->SCG_pClockConfig);
+
+    /* Restore System Reset Interrupt Config */
+    Mcu_RCM_RestoreSystemResetIsrConfig(u32SystemResetIsrConfig);
+
     /* set up the clock distribution tree */
-    /** @violates @ref Mcu_IPW_c_REF_5 The comma operator shall not be used. */
-    /** @violates @ref Mcu_IPW_c_REF_7 MISRA 2004 Rule 16.9, function identifier */
-    /** @violates @ref Mcu_IPW_c_REF_9 MISRA 2004 Rule 8.3, For each function parameter */
-    Call_Mcu_PCC_PeripheralConfig( Mcu_pClockConfigPtr->PCC_pConfig ) ;
-    
-#if (IPV_CMU == IPV_CMU_00_00_00_01)
-#ifdef MCU_ENABLE_CMU_PERIPHERAL
-#if (MCU_ENABLE_CMU_PERIPHERAL == STD_ON)
-    
-    if (
-         (MCU_IPW_FIRC_UNDER_MCU_CONTROL == (Mcu_pClockConfig->u8ClockSourcesControl & MCU_IPW_FIRC_UNDER_MCU_CONTROL)) &&
-         (((*(Mcu_pClockConfig->SCG_pClockConfig)->apFircClockConfig)[SCG_FIRCCSR_CONFIG_REG].u32RegisterData & SCG_FIRCCSR_FIRCEN_MASK32) == SCG_FIRCCSR_FIRCEN_MASK32)
-        )
-    {
-        /* Configure CMU */
-        Mcu_CMU_Init( Mcu_pClockConfigPtr->CMU_pConfig);
-    }
-
-#endif
-#endif
-#endif
+    Mcu_PCC_PeripheralConfig(Mcu_pClockConfig->PCC_pConfig);
 }
 #endif /* (MCU_INIT_CLOCK == STD_ON) */
 

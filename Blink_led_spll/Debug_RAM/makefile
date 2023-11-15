@@ -38,7 +38,7 @@ Blink_led_spll.siz \
 all: Blink_led_spll.elf secondary-outputs
 
 # Tool invocations
-Blink_led_spll.elf: $(OBJS) D:/S32_wp/Blink_led_spll/Project_Settings/Linker_Files/S32K144_64_ram.ld $(USER_OBJS)
+Blink_led_spll.elf: $(OBJS) C:/Users/PC/Desktop/Assigment2/AUTOSAR_FA_ASS_2/Blink_led_spll/Project_Settings/Linker_Files/S32K144_64_ram.ld $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Standard S32DS C Linker'
 	arm-none-eabi-gcc -o "Blink_led_spll.elf" "@Blink_led_spll.args"  $(USER_OBJS) $(LIBS)

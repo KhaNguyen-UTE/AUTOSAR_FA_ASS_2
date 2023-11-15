@@ -167,7 +167,7 @@ extern "C"{
 #define MCU_E_ISR_RESET_ALT_FAILURE             ((uint8)0x08U)
 /**@}*/
 
-#define MCU_HSRUN_MODE_NOT_SUPPORT (STD_OFF)
+#define MCU_HSRUN_VLPR_MODE_NOT_SUPPORT (STD_OFF)
 
 
 

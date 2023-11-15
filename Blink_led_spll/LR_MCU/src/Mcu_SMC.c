@@ -280,6 +280,7 @@ FUNC( void, MCU_CODE) Mcu_SMC_AllowedModesConfig(P2CONST(Mcu_SMC_ConfigType, AUT
 {
     /** @violates @ref Mcu_SMC_c_REF_4 Conversion from pointer to integer */
     /** @violates @ref Mcu_SMC_c_REF_5 The cast is used to access memory mapped registers.*/
+    
     REG_WRITE32(SMC_PMPROT_ADDR32, (pConfigPtr->u32AllowedModes & SMC_PMPROT_RWBITS_MASK32));
 }
 #endif /* #if (defined(MCU_DISABLE_SMC_INIT) && (STD_OFF == MCU_DISABLE_SMC_INIT)) */

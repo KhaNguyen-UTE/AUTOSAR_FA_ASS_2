@@ -677,7 +677,7 @@ static FUNC(Std_ReturnType, MCU_CODE) Mcu_CheckDisableCMU(VAR (uint8, AUTOMATIC)
 #endif /* MCU_DISABLE_CMU_API */
 
 
-#if ( MCU_VALIDATE_GLOBAL_CALL == STD_ON )
+
 /* mcu state check, entry point */
 /**
 * @brief Mcu_HLDChecksEntry - checks for invalid mode transitions
@@ -687,7 +687,6 @@ static FUNC(Std_ReturnType, MCU_CODE) Mcu_HLDChecksEntry(VAR( uint8, AUTOMATIC) 
 {
     VAR( Std_ReturnType, AUTOMATIC) CheckStatus = (Std_ReturnType)E_OK;
 
-#if (MCU_DEV_ERROR_DETECT == STD_ON)
     if ( MCU_INIT_ID == u8McuServiceID )
     {
         if ( MCU_UNINIT != Mcu_eStatus) /* if Mcu_Init was already called */
@@ -704,14 +703,12 @@ static FUNC(Std_ReturnType, MCU_CODE) Mcu_HLDChecksEntry(VAR( uint8, AUTOMATIC) 
             (void) Det_ReportError((uint16)MCU_MODULE_ID, MCU_INSTANCE_ID, (uint8)u8McuServiceID, MCU_E_UNINIT);
         }
     }
-#endif /* (MCU_DEV_ERROR_DETECT == STD_ON) */
     return (Std_ReturnType) CheckStatus;
 }
 
-#endif /* MCU_VALIDATE_GLOBAL_CALL == STD_ON  */
 
 
-#if ( MCU_VALIDATE_GLOBAL_CALL == STD_ON )
+
 /* mcu state check, exit point */
 /**
 * @brief Mcu_HLDChecksExit - checks for invalid mode transitions
@@ -735,7 +732,7 @@ static FUNC(void, MCU_CODE) Mcu_HLDChecksExit(VAR( Std_ReturnType, AUTOMATIC) re
         Mcu_eStatus = MCU_IDLE;
     }
 }
-#endif /* MCU_VALIDATE_GLOBAL_CALL == STD_ON */
+
 /*==================================================================================================
                                        GLOBAL FUNCTIONS
 ==================================================================================================*/
@@ -949,31 +946,23 @@ FUNC( Std_ReturnType, MCU_CODE) Mcu_InitRamSection( VAR( Mcu_RamSectionType, AUT
 FUNC( Std_ReturnType, MCU_CODE) Mcu_InitClock( VAR( Mcu_ClockType, AUTOMATIC) ClockSetting)
 {
     /* Return the success of the clock initialization operation. */
-#if (( MCU_VALIDATE_GLOBAL_CALL == STD_ON ) || (MCU_PARAM_CHECK==STD_ON))
     VAR(Std_ReturnType, AUTOMATIC) ClockStatus = (Std_ReturnType)E_NOT_OK;
-#else
-    VAR(Std_ReturnType, AUTOMATIC) ClockStatus;
-#endif
 
-#if ( MCU_VALIDATE_GLOBAL_CALL == STD_ON )
+    /*  Step1. Check Entry */
     if((Std_ReturnType)E_OK == (Std_ReturnType)Mcu_HLDChecksEntry(MCU_INITCLOCK_ID))
     {
-#endif /*(MCU_VALIDATE_GLOBAL_CALL == STD_ON)*/
-        /* Check if Clock configuration is valid. */
-#if (MCU_PARAM_CHECK==STD_ON)
+        /* Step2. Check if Clock configuration is valid. */
         if((Std_ReturnType)E_OK == (Std_ReturnType)Mcu_CheckInitClock(ClockSetting))
         {
-#endif /*(MCU_PARAM_CHECK==STD_ON)*/
+            /*Step3. Init SPLL clock or other clock  */
             Mcu_Ipw_InitClock(&(*Mcu_pConfigPtr->Mcu_apClockConfig)[Mcu_au8ClockConfigIds[ClockSetting]]);
             /* Command has been accepted. */
             ClockStatus = (Std_ReturnType)E_OK;
-#if (MCU_PARAM_CHECK==STD_ON)
         }
-#endif /*(MCU_PARAM_CHECK==STD_ON)*/
-#if ( MCU_VALIDATE_GLOBAL_CALL == STD_ON )
+        
+        /* Step4. Check Exit */
         Mcu_HLDChecksExit((Std_ReturnType)E_OK, MCU_INITCLOCK_ID);
     }
-#endif /*( MCU_VALIDATE_GLOBAL_CALL == STD_ON )*/
     return (Std_ReturnType)ClockStatus;
 }
 #endif /* (MCU_INIT_CLOCK == STD_ON) */
