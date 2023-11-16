@@ -506,7 +506,8 @@ static CONST( Mcu_SCG_RegisterConfigType, MCU_CONST) SIRC_ClockConfigPB0_0[MCU_N
     {
         SCG_SIRCCSR_ADDR32,
         (
-             SCG_SIRCCSR_SIRC_ENABLE_U32 |
+             //SCG_SIRCCSR_SIRC_ENABLE_U32 |
+             SCG_SIRCCSR_SIRC_DISABLE_U32|
              SCG_SIRCCSR_SIRCLPEN_VLP_DIS_U32 |
              SCG_SIRCCSR_SIRCSTEN_STOP_DIS_U32
         )
@@ -599,17 +600,27 @@ static CONST( Mcu_SCG_RegisterConfigType, MCU_CONST) SPLL_ClockConfigPB0_0[MCU_N
 /** @violates @ref Mcu_c_REF_3 MISRA 2004 Required Rule 1.4, 31 characters limit.*/
 static CONST( Mcu_SCG_ClockConfigType, MCU_CONST) SCG_ClockConfigPB0_0 =
 {
-    SCG_CLKOUTCNFG_CLKOUTSEL_SPLL_U32,
-    //SCG_CLKOUTCNFG_CLKOUTSEL_SOSC_U32,
-    //SCG_CLKOUTCNFG_CLKOUTSEL_SIRC_U32,
-    //(SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
-    (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
-    (SCG_SYS_CLK_NOT_UNDER_MCU_CONTROL),
+    /* u32RunClockControlConfiguration */
+    SCG_CLKOUTCNFG_CLKOUTSEL_FIRC_U32|
+    SCG_DIVCORE_U32((uint32)1U) |
+    SCG_DIVBUS_U32((uint32)1U) |
+    SCG_DIVSLOW_U32((uint32)3U),
+    
+    /* u32VLPRClockControlConfiguration */
+    SCG_CLKOUTCNFG_CLKOUTSEL_SIRC_U32|
+    SCG_DIVCORE_U32((uint32)1U) |
+    SCG_DIVBUS_U32((uint32)1U) |
+    SCG_DIVSLOW_U32((uint32)3U),
+
+    /* u32HSRUNClockControlConfiguration */
+    SCG_CLKOUTCNFG_CLKOUTSEL_FIRC_U32|
+    SCG_DIVCORE_U32((uint32)1U) |
+    SCG_DIVBUS_U32((uint32)1U) |
+    SCG_DIVSLOW_U32((uint32)3U),
 
 
     /* SCG ClockOut Config */
     SCG_CLKOUTCNFG_CLKOUTSEL_SIRC_U32,
-    //SCG_CLKOUTCNFG_CLKOUTSEL_SOSC_U32,
 
     /* SOSC Config */
     &SOSC_ClockConfigPB0_0,

@@ -302,7 +302,6 @@ FUNC( void, MCU_CODE) Mcu_SCG_SystemClockInit(P2CONST(Mcu_SCG_ClockConfigType, A
     {
         /*  Init error  */
     }
-
 #endif
 
     /*  Config ClockOut*/

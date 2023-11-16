@@ -10,6 +10,7 @@ int main(){
 
 	kha = Mcu_InitRamSection(0U);
 	Mcu_InitRamSection(1U);
+	Mcu_DistributePllClock();
 	Port_Init(&Port_Config);
 	int i;
 	while (1)
