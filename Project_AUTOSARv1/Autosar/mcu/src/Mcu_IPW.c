@@ -672,7 +672,11 @@ FUNC( void, MCU_CODE) Mcu_Ipw_InitClock(P2CONST( Mcu_ClockConfigType, AUTOMATIC,
 
 /* Init SIRC */
     Mcu_SCG_SircInit(Mcu_pClockConfig->SCG_pClockConfig);
+
+ /**** After Init SIRC Switch SIRC to Source Clock (RUN  - VLPR - HSRUN MODE) */
+    Mcu_SCG_DropSystemClockToTrustedClock();
 /* Init SOSC */
+
     /* get the current PLL clock monitor config */
     u32PLLClockMonitorConfig = Mcu_SCG_GetCurrentPLLClockMonitorConfig();
     /* Prepare SPLL before initialize SOSC - reset 3 bit 16,17,26 of Register CSR */

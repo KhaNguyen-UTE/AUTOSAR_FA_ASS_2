@@ -154,6 +154,10 @@ extern "C"{
 #define MCU_E_INIT_FAILED               ((uint8)0x11U)
 #define MCU_E_ALLREADY_INITIALIZED      ((uint8)0x13U)
 #define MCU_E_CMU_INDEX_OUT_OF_RANGE    ((uint8)0x22U)
+
+/*  Custom Error - Group3   */
+#define MCU_E_INIT_SIRC_FAILED          ((uint8)0xF1U)
+
 /**@}*/
 
 /**

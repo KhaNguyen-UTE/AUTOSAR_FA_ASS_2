@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "register.h": "c",
+    "gpt.h": "c",
+    "det.h": "c"
+  }
+}

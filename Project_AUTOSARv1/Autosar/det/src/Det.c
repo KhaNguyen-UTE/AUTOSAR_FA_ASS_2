@@ -44,7 +44,7 @@ extern "C"{
 */
 #include "Std_Types.h"
 #include "Det.h"
-
+#include "Lpuart.h" //kien
 /*==================================================================================================
 *                                        LOCAL MACROS
 ==================================================================================================*/
@@ -197,6 +197,28 @@ FUNC(Std_ReturnType, DET_CODE) Det_ReportError(VAR(uint16, AUTOMATIC) ModuleId, 
     }
     return E_OK;
 }
+/* Function for Report to UART*/
+FUNC(void, DET_CODE) Det_ReportErrorToUart(VAR(uint16, AUTOMATIC) ModuleId)
+{
+    uint32 count = 0;
+    uint8 buffer_temp[8] = "abc";
+    for (count = 0; count < DET_MAX_NUMBER_OF_EVENTS; count++ )
+    {
+        //buffer_temp = Det_ErrorId[count];
+        LPUART1_send_string(buffer_temp); 
+        // if (Det_ErrorId[count] != 0)
+        // {
+        //     buffer_temp = Det_ErrorId[count];
+        //     LPUART1_send_string(buffer_temp);  
+        // } 
+    }
+
+
+}
+
+
+
+
 
 #if defined(ASR_REL_4_0_REV_0003)
 #else

@@ -122,6 +122,7 @@ FUNC(Std_ReturnType, DET_CODE) Det_ReportTransientFault(VAR(uint16, AUTOMATIC) M
 #endif /*if defined(ASR_REL_4_0_REV_0003)*/
 FUNC(void, DET_CODE) Det_Start(void);
 
+FUNC(void, DET_CODE) Det_ReportErrorToUart(VAR(uint16, AUTOMATIC) ModuleId);
 #ifdef __cplusplus
 }
 #endif
